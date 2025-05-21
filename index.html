@@ -1,93 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Exercício 5</title>
-  <style>
-    table {
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 5px 10px;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
-  <input id="s1" type="text" placeholder="Digite uma string">
-  <input id="s2" type="text" placeholder="Digite uma string">
-  <button id="bt">Testar</button>
-  <div id="saida"></div>
-
-  <script>
-    function exercicio_3(palavra1, palavra2) {
-      var lista = [];
-      palavra1.split("").forEach(function () { return lista.push([0]); });
-
-      palavra2.split("").forEach(function (charPalavra2, i) {
-        palavra1.split("").forEach(function (charPalavra1, j) {
-          if (lista[j].length <= i)
-            lista[j].push(0);
-          if (charPalavra1 === charPalavra2) {
-            lista[j][i] = Math.max(lista[j][i === 0 ? 0 : i - 1] + 1, lista[j === 0 ? 0 : j - 1][i]);
-          } else {
-            lista[j][i] = Math.max(lista[j][i === 0 ? 0 : i - 1], lista[j === 0 ? 0 : j - 1][i]);
-          }
-        });
-      });
-
-      return {
-        lista,
-        palavra1,
-        palavra2
-      };
-    }
-
-    function montarTabela({ lista, palavra1, palavra2 }) {
-      const table = document.createElement("table");
-
-      // Cabeçalho
-      const headerRow = document.createElement("tr");
-      headerRow.appendChild(document.createElement("th")).textContent = "0";
-      for (const letra of palavra1) {
-        const th = document.createElement("th");
-        th.textContent = letra;
-        headerRow.appendChild(th);
-      }
-      table.appendChild(headerRow);
-
-      // Linhas da matriz
-      for (let i = 0; i < palavra2.length; i++) {
-        const row = document.createElement("tr");
-        const th = document.createElement("th");
-        th.textContent = palavra2[i];
-        row.appendChild(th);
-
-        for (let j = 0; j < palavra1.length; j++) {
-          const td = document.createElement("td");
-          td.textContent = lista[j][i];
-          row.appendChild(td);
+    <meta charset="UTF-8">
+    <title>Exercício 5</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
         }
 
-        table.appendChild(row);
-      }
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            text-align: center;
+        }
+    </style>
+</head>
 
-      return table;
-    }
+<body>
+    <input id="s1" type="text" placeholder="Digite uma string">
+    <input id="s2" type="text" placeholder="Digite uma string">
+    <button id="bt">Testar</button>
+    <div id="saida"></div>
+    <p id="res"></p>
 
-    document.getElementById('bt').addEventListener('click', () => {
-      const s1 = document.getElementById('s1').value;
-      const s2 = document.getElementById('s2').value;
+    <script>
+        function exercicio_3(palavra1, palavra2) {
+            var lista = [];
+            palavra1.split("").forEach(function () { return lista.push([0]); });
 
-      const resultado = exercicio_3(s1, s2);
-      const tabela = montarTabela(resultado);
+            palavra2.split("").forEach(function (charPalavra2, i) {
+                palavra1.split("").forEach(function (charPalavra1, j) {
+                    if (lista[j].length <= i)
+                        lista[j].push(0);
+                    if (charPalavra1 === charPalavra2) {
+                        lista[j][i] = Math.max(lista[j][i === 0 ? 0 : i - 1] + 1, lista[j === 0 ? 0 : j - 1][i]);
+                    } else {
+                        lista[j][i] = Math.max(lista[j][i === 0 ? 0 : i - 1], lista[j === 0 ? 0 : j - 1][i]);
+                    }
+                });
+            });
+            var resArr = [];
+            lista.forEach(function (l) {
+                var val = l.pop();
+                l.push(val !== null && val !== void 0 ? val : 0);
+                resArr.push(val !== null && val !== void 0 ? val : 0);
+            });
 
-      const saida = document.getElementById('saida');
-      saida.innerHTML = ""; // limpa antes
-      saida.appendChild(tabela);
-    });
-  </script>
+            var last = 0;
+            var subs = [];
+            resArr.forEach(function (v, i) {
+                if (i > 0 && v > last) {
+                    last = v;
+                    if (palavra1.substring(i - last + 1, i + 1) === palavra2.substring(0, last))
+                        subs.push(palavra2.substring(0, last));
+                }
+                else {
+                    last = v;
+                }
+            });
+            var res = subs.reduce(function (maior, atual) {
+                return atual.length > maior.length ? atual : maior;
+            }, "");
+            console.log(subs);
+            
+
+            return {
+                lista,
+                palavra1,
+                palavra2,
+                res
+            };
+        }
+
+        function montarTabela({ lista, palavra1, palavra2 }) {
+            const table = document.createElement("table");
+
+            // Cabeçalho
+            const headerRow = document.createElement("tr");
+            headerRow.appendChild(document.createElement("th")).textContent = "0";
+            for (const letra of palavra1) {
+                const th = document.createElement("th");
+                th.textContent = letra;
+                headerRow.appendChild(th);
+            }
+            table.appendChild(headerRow);
+
+            // Linhas da matriz
+            for (let i = 0; i < palavra2.length; i++) {
+                const row = document.createElement("tr");
+                const th = document.createElement("th");
+                th.textContent = palavra2[i];
+                row.appendChild(th);
+
+                for (let j = 0; j < palavra1.length; j++) {
+                    const td = document.createElement("td");
+                    td.textContent = lista[j][i];
+                    row.appendChild(td);
+                }
+
+                table.appendChild(row);
+            }
+
+            return table;
+        }
+
+        document.getElementById('bt').addEventListener('click', () => {
+            const s1 = document.getElementById('s1').value;
+            const s2 = document.getElementById('s2').value;
+
+            const resultado = exercicio_3(s1, s2);
+            const tabela = montarTabela(resultado);
+
+            const saida = document.getElementById('saida');
+            const res = document.getElementById('res');
+            saida.innerHTML = "";
+            console.log(resultado);
+            res.innerText = "Maior sequencia: " +  resultado.res;
+            saida.appendChild(tabela);
+        });
+    </script>
 </body>
+
 </html>
